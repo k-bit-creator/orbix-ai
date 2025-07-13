@@ -32,14 +32,13 @@ if (window.location.pathname.includes("chat.html")) {
     input.disabled = true;
 
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const res = await fetch("https://2513644b-e012-4fdf-9d2e-117d1865b418-00-ekxfoqi5xtja.pike.replit.dev/", {
         method: "POST",
         headers: {
-          "Authorization": "Bearer YOUR_GROQ_API_KEY_HERE", // 🔒 Removed actual key
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant", // ✅ Your free Groq model
+          model: "llama-3.1-8b-instant",
           messages: chatHistory,
           temperature: 0.7
         })
