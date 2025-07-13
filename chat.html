@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbix AI Chat</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+</head>
+<body class="chat" style="font-family: 'Orbitron', sans-serif;">
+
+  <div class="chat-wrapper">
+    <header class="chat-header">
+      <h2>ORBIX <span class="ai">AI</span></h2>
+    </header>
+    <main id="chat-window" class="chat-window"></main>
+    <footer class="chat-footer">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </footer>
+  </div>
+
+  <!-- 🔵 Left Sidebar Features -->
+  <div style="position: fixed; left: 10px; top: 100px; display: flex; flex-direction: column; gap: 10px; z-index: 1000;">
+    <button onclick="togglePanel('calculatorPanel')" class="sidebar-btn">🧮 Calculator</button>
+    <button onclick="togglePanel('calendarPanel')" class="sidebar-btn">📅 Calendar</button>
+    <button onclick="togglePanel('aboutAIPanel')" class="sidebar-btn">🧠 About AI</button>
+    <button onclick="togglePanel('policyPanel')" class="sidebar-btn">📜 Privacy & Policy</button>
+  </div>
+
+  <!-- 🕒 Clock (Right Side) -->
+  <div id="clock" style="position: fixed; right: 20px; top: 20px; font-size: 18px; color: cyan;"></div>
+
+  <!-- 🔳 Panels -->
+  <div id="calculatorPanel" class="panel-box" style="display:none;">
+    <h3>Calculator</h3>
+    <input type="text" id="calcInput" placeholder="0" readonly />
+    <div id="calcButtons"></div>
+  </div>
+
+  <div id="calendarPanel" class="panel-box" style="display:none;">
+    <h3>Calendar & Reminder</h3>
+    <input type="date" id="goToDate" />
+    <textarea id="reminderInput" placeholder="Set reminder..."></textarea>
+    <button onclick="saveReminder()">Save Reminder</button>
+    <div id="reminderDisplay"></div>
+  </div>
+
+  <div id="aboutAIPanel" class="panel-box" style="display:none;">
+    <h3>About AI Brain</h3>
+    <p>Orbix AI is powered by <strong>LLaMA 3.1 8B Instant</strong> – a fast, smart open-source large language model that delivers intelligent responses in real-time.</p>
+  </div>
+
+  <div id="policyPanel" class="panel-box" style="display:none;">
+    <h3>Privacy & Policy</h3>
+    <p>This app does not collect personal data. All chats are stored locally in your browser.</p>
+    <p><strong style="color: red;">Warning:</strong> Do not misuse this app for illegal, harmful, or abusive purposes. Violations may lead to permanent bans or restrictions.</p>
+  </div>
+
+  <!-- 🧠 Sidebar Styles -->
+  <style>
+    body {
+      background: black;
+      color: white;
+    }
+    .sidebar-btn {
+      background-color: cyan;
+      color: black;
+      padding: 8px 12px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .panel-box {
+      position: fixed;
+      bottom: 20px;
+      left: 150px;
+      background-color: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 15px;
+      border: 2px solid cyan;
+      border-radius: 10px;
+      max-width: 300px;
+      z-index: 999;
+      font-family: 'Orbitron', sans-serif;
+    }
+    #calcInput {
+      width: 100%;
+      padding: 8px;
+      font-size: 18px;
+      margin-bottom: 10px;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      font-family: 'Orbitron', monospace;
+      text-align: right;
+    }
+    #calcButtons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    #calcButtons button {
+      flex: 1 0 22%;
+      padding: 10px;
+      font-size: 16px;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      cursor: pointer;
+      font-family: 'Orbitron', monospace;
+    }
+    textarea, input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    #reminderDisplay {
+      font-size: 13px;
+      color: lime;
+      margin-top: 5px;
+    }
+  </style>
+
+  <!-- 🔌 Script for Features -->
+  <script>
+    // 🕒 Live Clock
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Toggle panels
+    function togglePanel(id) {
+      const panels = ['calculatorPanel', 'calendarPanel', 'aboutAIPanel', 'policyPanel'];
+      panels.forEach(panel => {
+        const el = document.getElementById(panel);
+        el.style.display = (panel === id && el.style.display === 'none') ? 'block' : 'none';
+      });
+    }
+
+    // Calculator Buttons
+    document.addEventListener("DOMContentLoaded", function () {
+      const calcLayout = ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','=','+'];
+      const calcDiv = document.getElementById('calcButtons');
+      calcLayout.forEach(btn => {
+        const button = document.createElement('button');
+        button.textContent = btn;
+        button.onclick = () => calcInput(btn);
+        calcDiv.appendChild(button);
+      });
+    });
+
+    function calcInput(val) {
+      const input = document.getElementById('calcInput');
+      if (val === '=') {
+        try {
+          input.value = eval(input.value);
+        } catch {
+          input.value = 'Error';
+        }
+      } else {
+        input.value += val;
+      }
+    }
+
+    // Calendar Reminder
+    function saveReminder() {
+      const date = document.getElementById('goToDate').value;
+      const text = document.getElementById('reminderInput').value;
+      if (date && text) {
+        localStorage.setItem('reminder-' + date, text);
+        document.getElementById('reminderDisplay').textContent = "Saved reminder on " + date;
+      }
+    }
+
+    function loadReminderForDate() {
+      const date = document.getElementById('goToDate').value;
+      const reminder = localStorage.getItem('reminder-' + date);
+      if (reminder) {
+        document.getElementById('reminderDisplay').textContent = "Reminder for " + date + ": " + reminder;
+      } else {
+        document.getElementById('reminderDisplay').textContent = "No reminder saved for " + date;
+      }
+    }
+
+    document.getElementById('goToDate').addEventListener('change', loadReminderForDate);
+  </script>
+
+  <!-- External script (handles chat logic) -->
+  <script src="script.js"></script>
+</body>
+</html>
